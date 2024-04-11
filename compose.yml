@@ -1,0 +1,21 @@
+version: '3'
+services:
+  localstack:
+    image: localstack/localstack:2.3.2
+    ports:
+      - "127.0.0.1:4566:4566" # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559" # external services port range
+    environment:
+      - DEBUG=1
+      - DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DEFAULT_REGION=ap-northeast-1
+      - DATA_DIR=/tmp/localstack/data
+      - PERSISTENCE=1
+      - SERVICES=s3,sqs # Select
+      - PROVIDER_OVERRIDE_S3=asf
+    volumes:
+      - localstack-volume:/tmp/localstack/data
+      - $XDG_RUNTIME_DIR/podman/podman.sock:/var/run/docker.sock
+      - "./docker/localstack/scripts/init.sh:/etc/localstack/init/ready.d/init-aws.sh"
